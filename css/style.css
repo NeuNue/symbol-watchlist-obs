@@ -1,0 +1,444 @@
+@import url("https://fonts.googleapis.com/css?family=Noto%20Sans%20SC");
+
+:root {
+  --base-size: 1px;
+  --font-base-size: calc(1 * var(--base-size));
+
+  --fallback-fonts: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "\5FAE \8F6F \96C5 \9ED1 ", SimHei, Arial, sans-serif;
+
+  --bg-dark: rgba(28, 28, 30, 0.95);
+  --text-primary: #ffffff;
+  --text-secondary: #999999;
+  --accent-green: #27c93f;
+  --accent-red: #ff5f56;
+  --accent-yellow: #ffbd2e;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  overflow: hidden !important;
+  margin: 0;
+  padding: 15px;
+  background-color: transparent;
+  font-family: "Noto Sans SC", var(--fallback-fonts);
+}
+
+/* macOS Window */
+.stock-container {
+  box-sizing: border-box;
+  padding: 50px 16px 16px 16px;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-dark);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.52), 0 0 0 1px rgba(0, 0, 0, 0.1);
+  min-width: 300px;
+  max-width: 500px;
+}
+
+/* macOS control buttons */
+.stock-container::before {
+  content: "";
+  position: absolute;
+  top: 16px;
+  left: 18px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--accent-red);
+  box-shadow: 20px 0 0 0 var(--accent-yellow), 40px 0 0 0 var(--accent-green);
+  z-index: 10;
+}
+
+/* macOS title */
+.stock-container::after {
+  content: "Watchlist";
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255, 255, 255, 0.4);
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 5;
+}
+
+/* Live indicator */
+.live-indicator {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 10;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--accent-green);
+}
+
+.live-text {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent-green);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+@keyframes live-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.live-indicator.blinking .live-dot {
+  animation: live-blink 1.5s ease-in-out infinite;
+}
+
+.live-indicator.blinking .live-text {
+  animation: live-blink 1.5s ease-in-out infinite;
+}
+
+/* Table */
+.stock-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.stock-table th {
+  text-align: center;
+  padding: 12px 8px 8px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stock-table th:first-child {
+  text-align: left;
+}
+
+.stock-table th:not(:first-child) {
+  text-align: right;
+}
+
+.stock-table td {
+  padding: 10px 8px;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stock-table td:first-child {
+  text-align: left;
+}
+
+.stock-table td:not(:first-child) {
+  text-align: right;
+}
+
+.stock-table tr:last-child td {
+  border-bottom: none;
+}
+
+.col-symbol {
+  font-weight: 600;
+  color: var(--text-primary);
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
+
+.col-price {
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  transition: color 0.8s ease;
+}
+
+.col-change-cell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 30px;
+}
+
+.col-change-cell .col-sparkline {
+  display: flex;
+  align-items: center;
+}
+
+.col-change-cell .col-change {
+  margin-bottom: 0;
+}
+
+.col-change {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 2px;
+}
+
+.col-change.positive {
+  color: var(--accent-green);
+}
+
+.col-change.negative {
+  color: var(--accent-red);
+}
+
+@keyframes tick-flash-up {
+  0% {
+    color: var(--text-primary);
+    transform: scale(1);
+  }
+  30% {
+    color: var(--accent-green);
+    transform: scale(1.08);
+  }
+  60% {
+    color: var(--accent-green);
+    transform: scale(1.02);
+  }
+  100% {
+    color: var(--accent-green);
+    transform: scale(1);
+  }
+}
+
+@keyframes tick-flash-down {
+  0% {
+    color: var(--text-primary);
+    transform: scale(1);
+  }
+  30% {
+    color: var(--accent-red);
+    transform: scale(1.08);
+  }
+  60% {
+    color: var(--accent-red);
+    transform: scale(1.02);
+  }
+  100% {
+    color: var(--accent-red);
+    transform: scale(1);
+  }
+}
+
+.col-price.tick-up {
+  animation: tick-flash-up 0.8s ease-out forwards;
+}
+
+.col-price.tick-down {
+  animation: tick-flash-down 0.8s ease-out forwards;
+}
+
+.price-up {
+  color: var(--accent-green) !important;
+}
+
+.price-down {
+  color: var(--accent-red) !important;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.empty-state h3 {
+  font-size: 14px;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.empty-state a {
+  color: var(--accent-green);
+  text-decoration: none;
+}
+
+/* Loading */
+.loading {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+/* Config page styles */
+.container {
+  padding: 50px 20px 20px 20px;
+  position: relative;
+}
+
+.container::before {
+  content: "";
+  position: absolute;
+  top: 16px;
+  left: 18px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--accent-red);
+  box-shadow: 20px 0 0 0 var(--accent-yellow), 40px 0 0 0 var(--accent-green);
+  z-index: 10;
+}
+
+.container::after {
+  content: "Configuration";
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255, 255, 255, 0.4);
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 5;
+}
+
+body.config-page {
+  background: var(--bg-dark);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.52), 0 0 0 1px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  overflow: auto;
+}
+
+.config-form {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.config-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.config-form input[type="text"] {
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: "Noto Sans SC", var(--fallback-fonts);
+}
+
+.config-form input[type="text"]:focus {
+  outline: none;
+  border-color: var(--accent-green);
+}
+
+.config-form .hint {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin: 8px 0 16px 0;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.btn-primary {
+  padding: 10px 20px;
+  background: var(--accent-green);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  font-family: "Noto Sans SC", var(--fallback-fonts);
+}
+
+.btn-secondary {
+  padding: 10px 20px;
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  font-size: 13px;
+  text-decoration: none;
+  display: inline-block;
+  font-family: "Noto Sans SC", var(--fallback-fonts);
+}
+
+.message {
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.message.success {
+  background: rgba(39, 201, 63, 0.15);
+  color: var(--accent-green);
+}
+
+.message.error {
+  background: rgba(255, 95, 86, 0.15);
+  color: var(--accent-red);
+}
+
+.current-config {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.current-config h3 {
+  font-size: 12px;
+  margin-bottom: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.symbol-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.symbol-tag {
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+.no-symbols {
+  color: var(--text-secondary);
+  font-size: 12px;
+}

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configure Crypto Symbols</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="config-page">
+  <div class="container">
+    <div class="config-form">
+      <label for="manualSymbols">Symbols (USDT pairs)</label>
+      <input type="text" id="manualSymbols" placeholder="BTCUSDT,ETHUSDT,SOLUSDT">
+      <p class="hint">e.g. BTCUSDT, ETHUSDT, SOLUSDT</p>
+
+      <div class="actions">
+        <button id="saveBtn" class="btn-primary">Save</button>
+        <a href="index.html" class="btn-secondary">View</a>
+      </div>
+
+      <div id="message" class="message"></div>
+    </div>
+
+    <div class="current-config">
+      <h3>Current Symbols</h3>
+      <div id="currentSymbols" class="symbol-tags"></div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+</body>
+</html>
