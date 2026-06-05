@@ -17,7 +17,7 @@
         console.error('Failed to parse stored symbols:', e);
       }
     }
-    return ['QQQUSDT', 'SPYUSDT', 'XAUUSDT', 'XAGUSDT', 'CLUSDT', 'NVDAUSDT', 'AAPLUSDT', 'GOOGLUSDT', 'TSLAUSDT', 'MUUSDT', 'CBRSUSDT', 'BTCUSDT', 'ETHUSDT'];
+    return ['QQQUSDT', 'SPYUSDT', 'XAUUSDT', 'CLUSDT', 'NVDAUSDT', 'AAPLUSDT', 'GOOGLUSDT', 'SOXLUSDT', 'MUUSDT', 'MRVLUSDT', 'BTCUSDT', 'ETHUSDT'];
   }
 
   function isUSMarketHours() {
@@ -61,11 +61,13 @@
   }
 
   function formatChange(change, changePercent) {
-    if (!change && change !== 0) return { text: '--', class: '' };
+    if (!Number.isFinite(change)) return { text: '--', class: '' };
     const sign = change >= 0 ? '+' : '';
-    const pct = changePercent !== undefined ? `${sign}${changePercent.toFixed(2)}%` : '';
+    const pct = Number.isFinite(changePercent)
+      ? `${sign}${changePercent.toFixed(2)}%`
+      : '';
     return {
-      text: `${sign}${parseFloat(change).toFixed(2)} ${pct}`,
+      text: `${sign}${change.toFixed(2)} ${pct}`,
       class: change >= 0 ? 'positive' : 'negative'
     };
   }
@@ -111,14 +113,18 @@
     const changeCell = tr.querySelector('.col-change-cell');
 
     let change, changePercent;
-    if (isUSMarketHours()) {
+    const prevClose = parseFloat(data.prevClosePrice);
+    const usePrevClose = isUSMarketHours()
+      && Number.isFinite(prevClose)
+      && prevClose > 0;
+
+    if (usePrevClose) {
       // Use previous close for comparison during US market hours
-      change = parseFloat(data.lastPrice) - parseFloat(data.prevClosePrice);
-      changePercent = parseFloat(data.prevClosePrice) > 0
-        ? (change / parseFloat(data.prevClosePrice)) * 100
-        : 0;
+      const last = parseFloat(data.lastPrice);
+      change = Number.isFinite(last) ? last - prevClose : NaN;
+      changePercent = (change / prevClose) * 100;
     } else {
-      // Use 24h change outside market hours
+      // Use 24h change outside market hours (or when prevClosePrice is invalid)
       change = parseFloat(data.priceChange) || 0;
       changePercent = parseFloat(data.priceChangePercent) || 0;
     }
@@ -131,8 +137,9 @@
     }
     if (changeCell) {
       const prices = priceHistory[symbol] || [];
+      const sparklinePositive = Number.isFinite(change) ? change >= 0 : true;
       changeCell.innerHTML = `
-        <span class="col-sparkline">${createSparklineSVG(prices, change >= 0)}</span>
+        <span class="col-sparkline">${createSparklineSVG(prices, sparklinePositive)}</span>
         <span class="col-change ${changeInfo.class}">${changeInfo.text}</span>
       `;
     }
