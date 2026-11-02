@@ -17,7 +17,7 @@
         console.error('Failed to parse stored symbols:', e);
       }
     }
-    return ['QQQUSDT', 'SPYUSDT', 'XAUUSDT', 'BZUSDT', 'PANWUSDT', 'CRWDUSDT', 'MSFTUSDT', 'DRAMUSDT', 'BTCUSDT', 'ETHUSDT'];
+    return ['QQQUSDT', 'SPYUSDT', 'XAUUSDT', 'BZUSDT', 'KOUSDT', 'MRNAUSDT', 'SOXLUSDT', 'SOXSUSDT', 'BTCUSDT', 'ETHUSDT'];
   }
 
   function isUSMarketHours() {
